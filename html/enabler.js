@@ -129,7 +129,7 @@ function getEmotion() {
             console.log("features: " + features);
 
             let genderText;
-            if (gender == 'Male') genderText = '남자'
+            if (gender == 'male') genderText = '남자'
             else genderText = '여자'
             let profileText = ageRange + ' (' + genderText + ')';
             console.log("profileText: " + profileText);
