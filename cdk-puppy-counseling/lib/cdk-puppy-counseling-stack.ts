@@ -17,9 +17,8 @@ const region = process.env.CDK_DEFAULT_REGION;
 const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
-const projectName = `puppy-counseling`; 
+const projectName = `demo-puppy-counseling`; 
 const bucketName = `storage-for-${projectName}-${region}`; 
-
 
 export class CdkPuppyCounselingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
