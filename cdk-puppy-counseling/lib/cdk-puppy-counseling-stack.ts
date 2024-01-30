@@ -24,11 +24,11 @@ const region = process.env.CDK_DEFAULT_REGION;
 const debug = false;
 const stage = 'dev';
 const s3_prefix = 'docs';
-const projectName = `puppy-counseling`; 
+const projectName = `puppy-history`; 
 const bucketName = `storage-for-${projectName}-${region}`; 
 
 
-export class CdkPuppyCounselingStack extends cdk.Stack {
+export class CdkPuppyhistoryStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -92,17 +92,17 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
     });
 
     // DynamoDB for call log
-    const counselingTableName = `db-call-log-for-${projectName}`;
-    const counselingDataTable = new dynamodb.Table(this, `db-call-log-for-${projectName}`, {
-      tableName: counselingTableName,
+    const historyTableName = `db-call-log-for-${projectName}`;
+    const historyDataTable = new dynamodb.Table(this, `db-call-log-for-${projectName}`, {
+      tableName: historyTableName,
       partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'request_time', type: dynamodb.AttributeType.STRING }, 
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-    const counselingIndexName = `index-type-for-${projectName}`;
-    counselingDataTable.addGlobalSecondaryIndex({ // GSI
-      indexName: counselingIndexName,
+    const historyIndexName = `index-type-for-${projectName}`;
+    historyDataTable.addGlobalSecondaryIndex({ // GSI
+      indexName: historyIndexName,
       partitionKey: { name: 'request_id', type: dynamodb.AttributeType.STRING },
     });
 
@@ -202,5 +202,69 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       value: 'https://' + distribution.domainName + '/enabler.html',
       description: 'url of enabler',
     });     
+
+    const roleLambda = new iam.Role(this, `role-lambda-chat-for-${projectName}`, {
+      roleName: `role-lambda-chat-for-${projectName}-${region}`,
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal("lambda.amazonaws.com"),
+        new iam.ServicePrincipal("bedrock.amazonaws.com"),
+      )
+    });
+    roleLambda.addManagedPolicy({
+      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+    });
+    const BedrockPolicy = new iam.PolicyStatement({  // policy statement for sagemaker
+      resources: ['*'],
+      actions: ['bedrock:*'],
+    });        
+    roleLambda.attachInlinePolicy( // add bedrock policy
+      new iam.Policy(this, `bedrock-policy-lambda-chat-for-${projectName}`, {
+        statements: [BedrockPolicy],
+      }),
+    );      
+
+    // Lambda for chat using langchain (container)
+    const lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
+      description: 'lambda for chat api',
+      functionName: `lambda-chat-api-for-${projectName}`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-chat')),
+      timeout: cdk.Duration.seconds(300),
+      role: roleLambda,
+      environment: {
+        s3_bucket: s3Bucket.bucketName,
+        s3_prefix: s3_prefix,
+        historyTableName: historyTableName,
+      }
+    });     
+    lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  
+    s3Bucket.grantRead(lambdaChatApi); // permission for s3
+    historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo
+
+    // POST method
+    const chat = api.root.addResource('chat');
+    chat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaChatApi, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [   // API Gateway sends to the client that called a method.
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting 
+    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });       
   }
 }
