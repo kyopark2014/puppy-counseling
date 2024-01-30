@@ -209,8 +209,10 @@ function nextImages() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             response = JSON.parse(xhr.responseText);
             console.log("response: " + JSON.stringify(response));
-            
-            // addReceivedMessage(response.request_id, response.msg)
+
+            console.log('requestId: ', response.request_id);
+            console.log('msg: ', response.msg);
+            console.log('speech_uri: ', response.speech_uri);
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);

@@ -6,12 +6,17 @@ import re
 from langchain.prompts import PromptTemplate
 from langchain.llms.bedrock import Bedrock
 from botocore.config import Config
+from urllib import parse
 import traceback
 
-s3 = boto3.client('s3')
-s3_bucket = os.environ.get('s3_bucket') # bucket name
+bucket = os.environ.get('s3_bucket') # bucket name
 s3_prefix = os.environ.get('s3_prefix')
 historyTableName = os.environ.get('historyTableName')
+path = os.environ.get('path')
+speech_prefix = 'speech/'
+
+s3 = boto3.client('s3')
+polly = boto3.client('polly')
    
 HUMAN_PROMPT = "\n\nHuman:"
 AI_PROMPT = "\n\nAssistant:"
@@ -88,6 +93,30 @@ def get_prompt_template():
     Assistant:"""    
     
     return PromptTemplate.from_template(prompt_template)
+
+def get_text_speech(path, speech_prefix, bucket, msg):
+    ext = "mp3"    
+    try:
+        response = polly.start_speech_synthesis_task(
+            Engine='neural',
+            LanguageCode='ko-KR',
+            OutputFormat=ext,
+            OutputS3BucketName=bucket,
+            OutputS3KeyPrefix=speech_prefix,
+            Text=msg,
+            TextType='text',
+            VoiceId='Seoyeon'        
+        )
+        print('response: ', response)
+    except Exception:
+        err_msg = traceback.format_exc()
+        print('error message: ', err_msg)        
+        raise Exception ("Not able to create voice")
+    
+    object = '.'+response['SynthesisTask']['TaskId']+'.'+ext
+    print('object: ', object)
+
+    return path+speech_prefix+parse.quote(object)
     
 def lambda_handler(event, context):
     print(event)
@@ -120,9 +149,11 @@ def lambda_handler(event, context):
     print("total run time(sec): ", str(elapsed_time))
         
     print('msg: ', msg)
+    speech_uri = get_text_speech(path, speech_prefix, bucket, msg)
     
     return {
         'statusCode': 200,
-        #'request_id': requestId,
-        #'msg': msg,
+        'request_id': requestId,
+        'msg': msg,
+        'speech_uri': speech_uri
     }
