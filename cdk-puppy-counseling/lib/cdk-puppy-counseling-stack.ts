@@ -10,14 +10,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3Deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as kendra from 'aws-cdk-lib/aws-kendra';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as rekognition from 'aws-cdk-lib/aws-rekognition';
 
 const region = process.env.CDK_DEFAULT_REGION;    
