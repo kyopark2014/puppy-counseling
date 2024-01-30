@@ -180,6 +180,10 @@ if(userId=="") {
 }
 console.log('userId: ', userId);
 
+function getDate(current) {    
+    return current.toISOString().slice(0,10);
+}
+
 function nextImages() {
     console.log('event for next');
 
