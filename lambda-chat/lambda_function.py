@@ -68,14 +68,14 @@ def get_llm(profile_of_LLMs, selected_LLM):
             }            
         )
     )
-    parameters = get_parameter(profile['model_type'], int(profile['maxOutputTokens']))
-    # print('parameters: ', parameters)
+    parameters = get_parameter()
 
     # langchain for bedrock
     llm = Bedrock(
         model_id=modelId, 
         client=boto3_bedrock, 
         model_kwargs=parameters)
+    
     return llm
 
 def get_prompt_template():
