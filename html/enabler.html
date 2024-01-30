@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enabler</title>
+    <link rel="stylesheet" href="enabler.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="button-container">
+            <button class="start-button">Video</button>
+            <!-- <button class="preview-button">Preview</button> -->
+            <a class="emotion-button">Emotion</a>
+            <!-- <a class="download-button">Download</a> -->
+            <a class="next-button">Next</a>
+        </div>
+        <div class="video-container">
+            <div class="video-item">
+                <h3>Video</h3>
+                <video width="335" height="250" autoplay muted id="preview"></video>
+            </div>
+            <div class="video-item">
+                <h3>Preview</h3>
+                <canvas id="canvas" style="border: 1px solid black;"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="enabler.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">   
+</body>
+
+</html>
