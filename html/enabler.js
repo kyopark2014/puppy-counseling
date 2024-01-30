@@ -184,6 +184,11 @@ function getDate(current) {
     return current.toISOString().slice(0,10);
 }
 
+function getTime(current) {
+    let time_map = [current.getHours(), current.getMinutes(), current.getSeconds()].map((a)=>(a < 10 ? '0' + a : a));
+    return time_map.join(':');
+}
+
 function nextImages() {
     console.log('event for next');
 
