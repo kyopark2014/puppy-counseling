@@ -24,7 +24,6 @@ let fileList = [];
 const maxImgItems = 1;
 let drawingIndex = 0;
 // let uuid = uuidv4();
-let userId;
 let emotionValue;
 let generation;
 let gender;
@@ -56,6 +55,15 @@ function preview() {
         // console.log(downloadButton.href);
         // downloadButton.download =`capture_${new Date()}.jpeg`; 
     }, 'image/png');
+}
+
+function emotion() {
+    canvas.getContext('2d').drawImage(previewPlayer, 0, 0, canvas.width, canvas.height);
+    drawingIndex = 0;
+
+    console.log('event for emotion');
+
+    getEmotion();
 }
 
 function getEmotion() {
@@ -109,14 +117,14 @@ function getEmotion() {
             console.log("emotion: " + emotionValue);
 
             let emotionText = "Emotion: ";
-            if (emotionValue == "happy") emotionText += "행복 (HAPPY)";
-            else if (emotionValue == "surprised") emotionText += "놀람 (SURPRISED)";
-            else if (emotionValue == "calm") emotionText += "평온 (CALM)";
-            else if (emotionValue == "angry") emotionText += "화남 (ANGRY)";
-            else if (emotionValue == "fear") emotionText += "공포 (FEAR)";
-            else if (emotionValue == "confused") emotionText += "혼란스러움 (CONFUSED)";
-            else if (emotionValue == "disgusted") emotionText += "역겨움 (DISGUSTED)";
-            else if (emotionValue == "sad") emotionText += "슬픔 (SAD)";
+            if (emotionValue == "happy") emotionText += "행복";
+            else if (emotionValue == "surprised") emotionText += "놀람";
+            else if (emotionValue == "calm") emotionText += "평온";
+            else if (emotionValue == "angry") emotionText += "화남";
+            else if (emotionValue == "fear") emotionText += "공포";
+            else if (emotionValue == "confused") emotionText += "혼란스러움";
+            else if (emotionValue == "disgusted") emotionText += "역겨움";
+            else if (emotionValue == "sad") emotionText += "슬픔";
 
             let features = "Features:";
             if (smile) features += ' 웃음';
@@ -166,17 +174,57 @@ function getEmotion() {
     });
 }
 
-function emotion() {
-    canvas.getContext('2d').drawImage(previewPlayer, 0, 0, canvas.width, canvas.height);
-    drawingIndex = 0;
-
-    console.log('event for emotion');
-
-    getEmotion();
+let userId = localStorage.getItem('userId'); // set userID if exists 
+if(userId=="") {
+    userId = uuidv4();
 }
+console.log('userId: ', userId);
 
 function nextImages() {
     console.log('event for next');
+
+    const uri = "chat";
+    const xhr = new XMLHttpRequest();
+
+    let requestId = uuidv4();
+    let current = new Date();
+    let datastr = getDate(current);
+    let timestr = getTime(current);
+    let requestTime = datastr+' '+timestr
+
+    // isResponsed.put(requestId, false);
+    // retryNum.put(requestId, 60); // max 300s (5x60)
+
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.responseText);
+            console.log("response: " + JSON.stringify(response));
+            
+            // addReceivedMessage(response.request_id, response.msg)
+        }
+        else if(xhr.readyState ===4 && xhr.status === 504) {
+            console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
+        }
+        else {
+            console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
+        }
+    };
+
+    let text = "나이는 "+generation+"이고, "+gender+"이며, 기분은 "+emotionValue+"이에요."
+    
+    let requestObj = {
+        "user_id": userId,
+        "request_id": requestId,
+        "request_time": requestTime,
+        "type": "msg",
+        "body": text
+    }
+    console.log("request: " + JSON.stringify(requestObj));
+
+    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
+
+    xhr.send(blob);   
 }
 
 function uuidv4() {
