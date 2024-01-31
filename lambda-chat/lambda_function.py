@@ -111,7 +111,7 @@ def get_text_speech(path, speech_prefix, bucket, msg):
     except Exception:
         err_msg = traceback.format_exc()
         print('error message: ', err_msg)        
-        raise Exception ("Not able to create voice")
+        raise Exception ("Not able to create speech")
     
     object = '.'+response['SynthesisTask']['TaskId']+'.'+ext
     print('object: ', object)
@@ -149,7 +149,7 @@ def lambda_handler(event, context):
     print("total run time(sec): ", str(elapsed_time))
         
     print('msg: ', msg)
-    speech_uri = get_text_speech(path, speech_prefix, bucket, msg)
+    speech_uri = get_text_speech(path=path, speech_prefix=speech_prefix, bucket=bucket, msg=msg)
     
     return {
         'statusCode': 200,
