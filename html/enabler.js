@@ -163,6 +163,8 @@ function getEmotion() {
             getMessage();
 
             path = 'https://d15oqygpysa1u.cloudfront.net/'+audio_file
+            console.log("speech: ", path);
+
             let audio = new Audio(path);
             audio.play();
 
