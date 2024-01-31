@@ -30,3 +30,6 @@ Bedrock Claude: Prompt에 기반하여 방문자용 메시지 준비
 
 Polly: 메시지를 음성으로 전환
 
+### 실행 결과
+
+![image](https://github.com/kyopark2014/puppy-counseling/assets/52392004/bc9c882f-8559-4974-8e2c-2bcf37ac8c5f)
