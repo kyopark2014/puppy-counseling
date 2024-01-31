@@ -229,8 +229,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       environment: {
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
-        historyTableName: historyTableName,
-        domain: distribution.domainName
+        historyTableName: historyTableName
       }
     });     
     lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  

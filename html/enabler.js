@@ -10,7 +10,7 @@ startButton.addEventListener("click", videoStart);
 emotionButton.addEventListener("click", emotion);
 // nextButton.addEventListener("click", nextImages);
 
-
+let audio_path = "";
 
 let profileInfo_emotion, profileInfo_age, profileInfo_features;
 profileInfo_emotion = document.getElementById('profile-emotion');
@@ -161,6 +161,9 @@ function getEmotion() {
             console.log("emotion: ", emotionValue);
 
             getMessage();
+
+            let audio = new Audio(audio_path);
+            audio.play();
         }
         else {
             profileInfo_emotion.innerHTML = `<h3>No Face</h3>`
@@ -217,6 +220,8 @@ function getMessage() {
             console.log('speech_uri: ', response.speech_uri);
 
             msgText.innerHTML = `<h5>${response.msg}</h5>`
+
+            audio_path = './'+response.speech_uri
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
