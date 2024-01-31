@@ -196,6 +196,13 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
 
     // deploy components
     new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role)   
+
+    // cloudfront setting 
+    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });  
   }
 }
 
@@ -270,13 +277,6 @@ export class componentDeployment extends cdk.Stack {
           }, 
         }
       ]
-    }); 
-
-    // cloudfront setting 
-    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
-      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
-      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
-      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });  
+    });     
   }
 } 
