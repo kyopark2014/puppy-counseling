@@ -221,7 +221,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       resources: ['*'],
     });
     roleLambda.attachInlinePolicy(
-      new iam.Policy(this, 'polly-policy', {
+      new iam.Policy(this,`polly-policy-for-${projectName}`, {
         statements: [PollyPolicy],
       }),
     );
@@ -231,7 +231,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       description: 'lambda for chat api',
       functionName: `lambda-chat-api-for-${projectName}`,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-chat')),
-      timeout: cdk.Duration.seconds(300),
+      timeout: cdk.Duration.seconds(60),
       role: roleLambda,
       environment: {
         s3_bucket: s3Bucket.bucketName,
