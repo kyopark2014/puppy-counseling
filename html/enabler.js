@@ -2,13 +2,13 @@ const startButton = document.querySelector(".start-button");
 const previewButton = document.querySelector(".preview-button");
 // const downloadButton = document.querySelector(".download-button"); 
 const emotionButton = document.querySelector(".emotion-button");
-// const nextButton = document.querySelector(".next-button");
+const playButton = document.querySelector(".play-button");
 
 //event
 startButton.addEventListener("click", videoStart);
 // previewButton.addEventListener("click",preview);
 emotionButton.addEventListener("click", emotion);
-// nextButton.addEventListener("click", nextImages);
+playButton.addEventListener("click", playSpeech);
 
 let audio_file = "";
 
@@ -218,12 +218,8 @@ function getMessage() {
 
             msgText.innerHTML = `<h5>${response.msg}</h5>`
 
-            path = 'https://d15oqygpysa1u.cloudfront.net/'+response.speech_uri
-            console.log("speech: ", path);
-
-            let audio = new Audio(path);
-            audio.play();
-
+            audio_file = 'https://d15oqygpysa1u.cloudfront.net/'+response.speech_uri
+            console.log("speech: ", audio_file);
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
@@ -249,8 +245,11 @@ function getMessage() {
     xhr.send(blob);   
 }
 
-function nextImages() {
-    console.log('event for next');
+function playSpeech() {
+    console.log('event for play');
+
+    let audio = new Audio(audio_file);
+    audio.play();
 }
 
 function uuidv4() {
