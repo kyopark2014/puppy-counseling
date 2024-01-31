@@ -194,8 +194,30 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       description: 'url of enabler',
     });     
 
+    
+
     // deploy components
     new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role)   
+
+    // POST method
+    const chat = api.root.addResource('chat');
+    chat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaChatApi, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [   // API Gateway sends to the client that called a method.
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    });     
 
     // cloudfront setting 
     distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
@@ -257,26 +279,6 @@ export class componentDeployment extends cdk.Stack {
     });     
     lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  
     s3Bucket.grantRead(lambdaChatApi); // permission for s3
-    historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo
-
-    // POST method
-    const chat = api.root.addResource('chat');
-    chat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaChatApi, {
-      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
-      credentialsRole: role,
-      integrationResponses: [{
-        statusCode: '200',
-      }], 
-      proxy:false, 
-    }), {
-      methodResponses: [   // API Gateway sends to the client that called a method.
-        {
-          statusCode: '200',
-          responseModels: {
-            'application/json': apiGateway.Model.EMPTY_MODEL,
-          }, 
-        }
-      ]
-    });     
+    historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo    
   }
 } 
