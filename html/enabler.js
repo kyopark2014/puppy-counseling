@@ -214,6 +214,9 @@ function getMessage() {
             console.log('requestId: ', response.request_id);
             console.log('msg: ', response.msg);
             console.log('speech_uri: ', response.speech_uri);
+
+            msg = response.msg;
+            message.innerHTML = `<h5>${msg}</h5>`
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
@@ -221,10 +224,6 @@ function getMessage() {
         else {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
         }
-
-        msg = response.msg;
-
-        message.innerHTML = `<h5>${msg}</h5>`
     };
 
     let text = "나이는 "+generation+"이고, "+gender+"이며, 기분은 "+emotionValue+"이에요."
