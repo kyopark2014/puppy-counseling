@@ -215,6 +215,13 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       }),
     );      
 
+    // cloudfront setting 
+    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });    
+
     // Lambda for chat using langchain (container)
     const lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
       description: 'lambda for chat api',
@@ -253,11 +260,6 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       ]
     }); 
 
-    // cloudfront setting 
-    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
-      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
-      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
-      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });       
+       
   }
 }
