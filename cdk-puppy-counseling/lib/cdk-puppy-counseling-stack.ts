@@ -238,7 +238,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       }
     });     
     lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  
-    s3Bucket.grantRead(lambdaChatApi); // permission for s3
+    s3Bucket.grantReadWrite(lambdaChatApi); // permission for s3
     historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo
 
     // POST method
