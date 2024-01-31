@@ -15,7 +15,7 @@ let profileInfo_emotion, profileInfo_age, profileInfo_features;
 profileInfo_emotion = document.getElementById('profile-emotion');
 profileInfo_age = document.getElementById('profile-age');
 // profileInfo_features = document.getElementById('profile-features');
-message = document.getElementById('message');
+msgText = document.getElementById('message');
 
 // const cloudfrntUrl = "https://d14j04tdmh4c1d.cloudfront.net/";
 
@@ -215,7 +215,7 @@ function getMessage() {
             console.log('msg: ', response.msg);
             console.log('speech_uri: ', response.speech_uri);
 
-            message.innerHTML = `<h5>${response.msg}</h5>`
+            msgText.innerHTML = `<h5>${response.msg}</h5>`
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
