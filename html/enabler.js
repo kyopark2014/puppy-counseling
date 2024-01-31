@@ -15,7 +15,7 @@ let profileInfo_emotion, profileInfo_age, profileInfo_features;
 profileInfo_emotion = document.getElementById('profile-emotion');
 profileInfo_age = document.getElementById('profile-age');
 // profileInfo_features = document.getElementById('profile-features');
-promptText = document.getElementById('promptText');
+message = document.getElementById('message');
 
 // const cloudfrntUrl = "https://d14j04tdmh4c1d.cloudfront.net/";
 
@@ -159,6 +159,7 @@ function getEmotion() {
 
             console.log("emotion: ", emotionValue);
 
+            getMessage();
         }
         else {
             profileInfo_emotion.innerHTML = `<h3>No Face</h3>`
@@ -189,7 +190,7 @@ function getTime(current) {
     return time_map.join(':');
 }
 
-function nextImages() {
+function getMessage() {
     console.log('event for next');
 
     const uri = "chat";
@@ -220,6 +221,10 @@ function nextImages() {
         else {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
         }
+
+        msg = response.msg;
+
+        message.innerHTML = `<h5>${msg}</h5>`
     };
 
     let text = "나이는 "+generation+"이고, "+gender+"이며, 기분은 "+emotionValue+"이에요."
@@ -236,6 +241,10 @@ function nextImages() {
     var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
 
     xhr.send(blob);   
+}
+
+function nextImages() {
+    console.log('event for next');
 }
 
 function uuidv4() {
