@@ -161,14 +161,6 @@ function getEmotion() {
             console.log("emotion: ", emotionValue);
 
             getMessage();
-
-            path = 'https://d15oqygpysa1u.cloudfront.net/'+audio_file
-            console.log("speech: ", path);
-
-            let audio = new Audio(path);
-            audio.play();
-
-            
         }
         else {
             profileInfo_emotion.innerHTML = `<h3>No Face</h3>`
@@ -226,7 +218,12 @@ function getMessage() {
 
             msgText.innerHTML = `<h5>${response.msg}</h5>`
 
-            audio_file = response.speech_uri
+            path = 'https://d15oqygpysa1u.cloudfront.net/'+response.speech_uri
+            console.log("speech: ", path);
+
+            let audio = new Audio(path);
+            audio.play();
+
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
