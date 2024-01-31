@@ -2,12 +2,13 @@ const startButton = document.querySelector(".start-button");
 const previewButton = document.querySelector(".preview-button");
 // const downloadButton = document.querySelector(".download-button"); 
 const emotionButton = document.querySelector(".emotion-button");
-const nextButton = document.querySelector(".next-button");
+// const nextButton = document.querySelector(".next-button");
+
 //event
 startButton.addEventListener("click", videoStart);
 // previewButton.addEventListener("click",preview);
 emotionButton.addEventListener("click", emotion);
-nextButton.addEventListener("click", nextImages);
+// nextButton.addEventListener("click", nextImages);
 
 
 
