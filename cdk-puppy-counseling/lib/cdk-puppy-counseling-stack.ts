@@ -215,12 +215,16 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       }),
     );      
 
-    // cloudfront setting 
-    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
-      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
-      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
-      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });    
+    // Poly Role
+    const PollyPolicy = new iam.PolicyStatement({  
+      actions: ['polly:*'],
+      resources: ['*'],
+    });
+    roleLambda.attachInlinePolicy(
+      new iam.Policy(this, 'polly-policy', {
+        statements: [PollyPolicy],
+      }),
+    );
 
     // Lambda for chat using langchain (container)
     const lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
@@ -232,7 +236,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       environment: {
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
-        path: 'https://'+distribution.domainName+'/',
+        //path: 'https://'+distribution.domainName+'/',
         historyTableName: historyTableName,        
       }
     });     
@@ -260,6 +264,12 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       ]
     }); 
 
-       
+    // cloudfront setting 
+    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });       
   }
 }
+
