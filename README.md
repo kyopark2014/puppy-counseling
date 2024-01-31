@@ -24,11 +24,11 @@
 
 ### 관련 서비스
 
-Rekognition: 표졍 분석, 옷차림 분석
+Rekognition: 표졍 분석, 옷차림을 분석하여 profile을 생성합니다.
 
-Bedrock Claude: Prompt에 기반하여 방문자용 메시지 준비
+Bedrock Claude: Prompt에 기반하여 방문자에게 보낼 인사말을 메시지로 생성합니다.
 
-Polly: 메시지를 음성으로 전환
+Polly: 메시지를 음성으로 전환합니다.
 
 ### 실행 결과
 
