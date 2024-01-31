@@ -10,7 +10,7 @@ startButton.addEventListener("click", videoStart);
 emotionButton.addEventListener("click", emotion);
 // nextButton.addEventListener("click", nextImages);
 
-let audio_path = "";
+let audio_file = "";
 
 let profileInfo_emotion, profileInfo_age, profileInfo_features;
 profileInfo_emotion = document.getElementById('profile-emotion');
@@ -162,7 +162,7 @@ function getEmotion() {
 
             getMessage();
 
-            path = 'https://d15oqygpysa1u.cloudfront.net/speech/.eeec40d4-08ad-4cea-8684-3057ea41564b.mp3'
+            path = 'https://d15oqygpysa1u.cloudfront.net/'+audio_file
             let audio = new Audio(path);
             audio.play();
 
@@ -224,7 +224,7 @@ function getMessage() {
 
             msgText.innerHTML = `<h5>${response.msg}</h5>`
 
-            audio_path = './'+response.speech_uri
+            audio_file = response.speech_uri
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
