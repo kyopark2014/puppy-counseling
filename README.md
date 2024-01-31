@@ -32,4 +32,6 @@ Polly: 메시지를 음성으로 전환
 
 ### 실행 결과
 
+Video 버튼을 클릭하면 카메라 화면이 시작됩니다. 이후 Start 버튼을 선택하여 캡춰할 이미지를 선택합니다. 이때, /emotion API를 이용해 Rekognition으로 이미지가 전달되면 Emotion, Age와 같은 사용자에 대한 features가 추출됩니다. 이 정보를 기반으로 profile을 생성하여 LLM으로 전달하면 아래와 같은 메시지를 얻을 수 있습니다. 이 메시지는 Polly를 통해 mp3로 된 음성이 생성됩니다. Play 버튼을 선택하면 변환된 음성을 들을 수 있습니다. 
+
 ![image](https://github.com/kyopark2014/puppy-counseling/assets/52392004/bc9c882f-8559-4974-8e2c-2bcf37ac8c5f)
