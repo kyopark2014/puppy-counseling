@@ -19,6 +19,7 @@ const stage = 'dev';
 const s3_prefix = 'docs';
 const projectName = `demo-puppy-counseling`; 
 const bucketName = `storage-for-${projectName}-${region}`; 
+const lambdaChatApi;
 
 export class CdkPuppyCounselingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -197,7 +198,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
     
 
     // deploy components
-    new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role)   
+    const deployment = new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role, lambdaChatApi)   
 
     // POST method
     const chat = api.root.addResource('chat');
@@ -229,7 +230,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
 }
 
 export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, s3Bucket: any, distribution: any, historyTableName: any, historyDataTable: any, api: any, role: any, props?: cdk.StackProps) {    
+  constructor(scope: Construct, id: string, s3Bucket: any, distribution: any, historyTableName: any, historyDataTable: any, api: any, role: any, lambdaChatApi: any, props?: cdk.StackProps) {    
     super(scope, id, props);
 
     const roleLambda = new iam.Role(this, `role-lambda-chat-for-${projectName}`, {
@@ -264,7 +265,7 @@ export class componentDeployment extends cdk.Stack {
     );
 
     // Lambda for chat using langchain (container)
-    const lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
+    lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
       description: 'lambda for chat api',
       functionName: `lambda-chat-api-for-${projectName}`,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-chat')),
