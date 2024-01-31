@@ -215,8 +215,7 @@ function getMessage() {
             console.log('msg: ', response.msg);
             console.log('speech_uri: ', response.speech_uri);
 
-            msg = response.msg;
-            message.innerHTML = `<h5>${msg}</h5>`
+            message.innerHTML = `<h5>${response.msg}</h5>`
         }
         else if(xhr.readyState ===4 && xhr.status === 504) {
             console.log("response: " + xhr.readyState + ', xhr.status: '+xhr.status);
