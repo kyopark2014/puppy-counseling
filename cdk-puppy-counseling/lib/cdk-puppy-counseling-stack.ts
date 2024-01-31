@@ -143,7 +143,6 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       code: lambda.Code.fromAsset("../lambda-emotion"),
       handler: "index.handler",
       timeout: cdk.Duration.seconds(10),
-      logRetention: logs.RetentionDays.ONE_DAY,
       environment: {
         bucketName: s3Bucket.bucketName,
         collectionId: collectionId
