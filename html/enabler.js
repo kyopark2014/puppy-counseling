@@ -162,8 +162,11 @@ function getEmotion() {
 
             getMessage();
 
-            let audio = new Audio(audio_path);
+            path = 'https://d15oqygpysa1u.cloudfront.net/speech/.eeec40d4-08ad-4cea-8684-3057ea41564b.mp3'
+            let audio = new Audio(path);
             audio.play();
+
+            
         }
         else {
             profileInfo_emotion.innerHTML = `<h3>No Face</h3>`
