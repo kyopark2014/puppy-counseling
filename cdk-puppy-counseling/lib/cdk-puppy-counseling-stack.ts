@@ -83,9 +83,9 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       description: 'The domain name of the Distribution',
     });
 
-    // DynamoDB for call log
-    const historyTableName = `db-call-log-for-${projectName}`;
-    const historyDataTable = new dynamodb.Table(this, `db-call-log-for-${projectName}`, {
+    // DynamoDB for history
+    const historyTableName = `db-history-for-${projectName}`;
+    const historyDataTable = new dynamodb.Table(this, `db-history-for-${projectName}`, {
       tableName: historyTableName,
       partitionKey: { name: 'user_id', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'request_time', type: dynamodb.AttributeType.STRING }, 
@@ -215,7 +215,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       }),
     );      
 
-    // Poly Role
+    // Polly Role
     const PollyPolicy = new iam.PolicyStatement({  
       actions: ['polly:*'],
       resources: ['*'],
@@ -236,7 +236,7 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       environment: {
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
-        //path: 'https://'+distribution.domainName+'/',
+        path: 'https://'+distribution.domainName+'/',
         historyTableName: historyTableName,        
       }
     });     
