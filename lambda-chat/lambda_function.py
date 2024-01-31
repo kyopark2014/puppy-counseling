@@ -83,7 +83,7 @@ def get_llm(profile_of_LLMs, selected_LLM):
     return llm
 
 def get_prompt_template():
-    prompt_template = """\n\nHuman: 다음 <profile> tag는 Human의 특징을 설명하고 있습니다. Assistant는 유치원 선생님처럼 Human의 기분에 맞추어서 인사를 해주세요.
+    prompt_template = """\n\nHuman: 다음 <profile> tag는 Human의 특징을 설명하고 있습니다. Assistant는 Human의 기분에 맞추어서 인사를 해주세요.
             
     <profile>
     {input}
