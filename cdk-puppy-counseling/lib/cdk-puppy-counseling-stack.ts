@@ -195,6 +195,15 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       description: 'url of enabler',
     });     
 
+    // deploy components
+    new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role)   
+  }
+}
+
+export class componentDeployment extends cdk.Stack {
+  constructor(scope: Construct, id: string, s3Bucket: any, distribution: any, historyTableName: any, historyDataTable: any, api: any, role: any, props?: cdk.StackProps) {    
+    super(scope, id, props);
+
     const roleLambda = new iam.Role(this, `role-lambda-chat-for-${projectName}`, {
       roleName: `role-lambda-chat-for-${projectName}-${region}`,
       assumedBy: new iam.CompositePrincipal(
@@ -269,7 +278,6 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
       allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
       viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });       
+    });  
   }
-}
-
+} 
