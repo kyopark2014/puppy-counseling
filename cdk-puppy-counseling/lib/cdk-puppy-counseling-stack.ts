@@ -188,11 +188,6 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });
 
-    new cdk.CfnOutput(this, 'Enabler', {
-      value: 'https://' + distribution.domainName + '/enabler.html',
-      description: 'url of enabler',
-    });     
-
     const roleLambda = new iam.Role(this, `role-lambda-chat-for-${projectName}`, {
       roleName: `role-lambda-chat-for-${projectName}-${region}`,
       assumedBy: new iam.CompositePrincipal(
@@ -234,7 +229,8 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       environment: {
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
-        historyTableName: historyTableName,        
+        historyTableName: historyTableName,
+        domain: distribution.domainName
       }
     });     
     lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  
@@ -267,5 +263,11 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
       viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });  
+
+    new cdk.CfnOutput(this, 'Enabler', {
+      value: 'https://' + distribution.domainName + '/enabler.html',
+      description: 'url of enabler',
+    });     
+
   }
 }
