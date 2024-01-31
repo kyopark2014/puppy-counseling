@@ -12,7 +12,6 @@ import traceback
 bucket = os.environ.get('s3_bucket') # bucket name
 s3_prefix = os.environ.get('s3_prefix')
 historyTableName = os.environ.get('historyTableName')
-path = os.environ.get('path',"")
 speech_prefix = 'speech/'
 
 s3 = boto3.client('s3')
@@ -94,7 +93,7 @@ def get_prompt_template():
     
     return PromptTemplate.from_template(prompt_template)
 
-def get_text_speech(path, speech_prefix, bucket, msg):
+def get_text_speech(speech_prefix, bucket, msg):
     ext = "mp3"    
     try:
         response = polly.start_speech_synthesis_task(
@@ -116,7 +115,7 @@ def get_text_speech(path, speech_prefix, bucket, msg):
     object = '.'+response['SynthesisTask']['TaskId']+'.'+ext
     print('object: ', object)
 
-    return path+speech_prefix+parse.quote(object)
+    return speech_prefix+parse.quote(object)
     
 def lambda_handler(event, context):
     print(event)
@@ -149,7 +148,7 @@ def lambda_handler(event, context):
     print("total run time(sec): ", str(elapsed_time))
         
     print('msg: ', msg)
-    speech_uri = get_text_speech(path=path, speech_prefix=speech_prefix, bucket=bucket, msg=msg)
+    speech_uri = get_text_speech(speech_prefix, bucket, msg)
     
     return {
         'statusCode': 200,

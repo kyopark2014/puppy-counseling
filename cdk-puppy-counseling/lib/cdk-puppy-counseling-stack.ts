@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
-import * as logs from "aws-cdk-lib/aws-logs"
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudFront from 'aws-cdk-lib/aws-cloudfront';
@@ -19,7 +18,6 @@ const stage = 'dev';
 const s3_prefix = 'docs';
 const projectName = `demo-puppy-counseling`; 
 const bucketName = `storage-for-${projectName}-${region}`; 
-const lambdaChatApi;
 
 export class CdkPuppyCounselingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -195,44 +193,6 @@ export class CdkPuppyCounselingStack extends cdk.Stack {
       description: 'url of enabler',
     });     
 
-    
-
-    // deploy components
-    const deployment = new componentDeployment(scope, `deployment-of-${projectName}`, s3Bucket, distribution, historyTableName, historyDataTable, api, role, lambdaChatApi)   
-
-    // POST method
-    const chat = api.root.addResource('chat');
-    chat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaChatApi, {
-      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
-      credentialsRole: role,
-      integrationResponses: [{
-        statusCode: '200',
-      }], 
-      proxy:false, 
-    }), {
-      methodResponses: [   // API Gateway sends to the client that called a method.
-        {
-          statusCode: '200',
-          responseModels: {
-            'application/json': apiGateway.Model.EMPTY_MODEL,
-          }, 
-        }
-      ]
-    });     
-
-    // cloudfront setting 
-    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
-      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
-      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
-      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });  
-  }
-}
-
-export class componentDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, s3Bucket: any, distribution: any, historyTableName: any, historyDataTable: any, api: any, role: any, lambdaChatApi: any, props?: cdk.StackProps) {    
-    super(scope, id, props);
-
     const roleLambda = new iam.Role(this, `role-lambda-chat-for-${projectName}`, {
       roleName: `role-lambda-chat-for-${projectName}-${region}`,
       assumedBy: new iam.CompositePrincipal(
@@ -265,7 +225,7 @@ export class componentDeployment extends cdk.Stack {
     );
 
     // Lambda for chat using langchain (container)
-    lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
+    const lambdaChatApi = new lambda.DockerImageFunction(this, `lambda-chat-for-${projectName}`, {
       description: 'lambda for chat api',
       functionName: `lambda-chat-api-for-${projectName}`,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-chat')),
@@ -274,12 +234,38 @@ export class componentDeployment extends cdk.Stack {
       environment: {
         s3_bucket: s3Bucket.bucketName,
         s3_prefix: s3_prefix,
-        path: 'https://'+distribution.domainName+'/',
         historyTableName: historyTableName,        
       }
     });     
     lambdaChatApi.grantInvoke(new iam.ServicePrincipal('apigateway.amazonaws.com'));  
     s3Bucket.grantRead(lambdaChatApi); // permission for s3
-    historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo    
+    historyDataTable.grantReadWriteData(lambdaChatApi); // permission for dynamo
+
+    // POST method
+    const chat = api.root.addResource('chat');
+    chat.addMethod('POST', new apiGateway.LambdaIntegration(lambdaChatApi, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [   // API Gateway sends to the client that called a method.
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting 
+    distribution.addBehavior("/chat", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });  
   }
-} 
+}
