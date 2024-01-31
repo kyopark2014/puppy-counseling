@@ -12,7 +12,7 @@ import traceback
 bucket = os.environ.get('s3_bucket') # bucket name
 s3_prefix = os.environ.get('s3_prefix')
 historyTableName = os.environ.get('historyTableName')
-path = os.environ.get('path')
+path = os.environ.get('path',"")
 speech_prefix = 'speech/'
 
 s3 = boto3.client('s3')
